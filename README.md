@@ -94,7 +94,8 @@ $ npm run hot-dev-server
 
 _In another console_:
 ```
-$ npm run start-dev```
+$ npm run start-dev
+```
 
 
 # Together
