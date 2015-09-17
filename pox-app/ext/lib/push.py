@@ -1,6 +1,7 @@
 from pusher import Pusher
+from pox.core import core
 
-
+log = core.getLogger()
 
 STREAM = "pox"
 
@@ -12,4 +13,5 @@ pusher = Pusher(
 
 def send_message(message):
 
+    log.debug("Sending message %s" % message.to_dict())
     pusher.trigger(STREAM, message.get_type(), message.to_dict())

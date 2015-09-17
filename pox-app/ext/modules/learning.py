@@ -24,8 +24,10 @@ import pox.openflow.libopenflow_01 as of
 from pox.lib.util import dpid_to_str
 from pox.lib.util import str_to_bool
 import time
-import jsonpickle
-import lib.push as p
+
+
+import lib.push as pusher
+from schema.message import *
 
 log = core.getLogger()
 
@@ -79,7 +81,8 @@ class LearningSwitch (object):
     self.connection = connection
     self.transparent = transparent
 
-    p.pusher.trigger('pox', 'init', {'message': 'init learning swtich'})
+
+    pusher.send_message(SystemInitMessage({'message': 'init learning swtich'}))
 
     # Our table
     self.macToPort = {}
@@ -124,9 +127,7 @@ class LearningSwitch (object):
       msg.data = event.ofp
       msg.in_port = event.port
 
-      #p.pusher.trigger('l2-learning', 'packet_flood', {'message': jsonpickle.pickle(msg)})
-      #p.pusher.trigger('l2-learning', 'packet_flood', {'message': 'packet flood'})
-      p.pusher.trigger('pox', 'packet_flood', {'message': 'packet flood'})
+      pusher.send_message(PacketFloodMessage({'message': 'Packet Flooded'}))
       self.connection.send(msg)
 
     def drop (duration = None):
@@ -191,6 +192,8 @@ class l2_learning (object):
 
   def _handle_ConnectionUp (self, event):
     log.debug("Connection %s" % (event.connection,))
+
+    pusher.send_message(NewConnectionMessage({"message": "new connection"}))
     LearningSwitch(event.connection, self.transparent)
 
 
