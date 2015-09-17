@@ -173,6 +173,20 @@ class LearningSwitch (object):
         # 6
         log.debug("installing flow for %s.%i -> %s.%i" %
                   (packet.src, event.port, packet.dst, port))
+
+        log.debug("connection info %s" % self.connection)
+
+        pusher.send_message(FlowAddedMessage({
+          "source": {
+            "mac": packet.src,
+            "port": event.port
+          },
+          "dest": {
+            "mac": packet.dst,
+            "port": port
+          }
+        }))
+
         msg = of.ofp_flow_mod()
         msg.match = of.ofp_match.from_packet(packet, event.port)
         msg.idle_timeout = 10

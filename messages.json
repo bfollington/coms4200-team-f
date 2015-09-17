@@ -1,1 +1,1 @@
-{"messages": ["packet_flood", "init", "connection_up"]}
+{"messages": ["PacketFloodMessage", "SystemInitMessage", "NewConnectionMessage", "FlowAddedMessage", "FlowRemovedMessage"]}
