@@ -1,9 +1,11 @@
 'use strict';
 
-var React        = require('react'),
-    Router       = require('react-router'),
-    Route        = Router.Route,
-    DefaultRoute = Router.DefaultRoute;
+import React from "react";
+import {Route, DefaultRoute} from "react-router";
+
+import Application from "./components/App/Application";
+import About from "./components/About/About";
+import Home from "./components/Home/Home";
 
 // polyfill
 if (!Object.assign) {
@@ -12,8 +14,8 @@ if (!Object.assign) {
 
 // export routes
 module.exports = (
-  <Route name='app' path='/' handler={require('./components/App')}>
-    <Route name='about' handler={require('./components/About')} />
-    <DefaultRoute handler={require('./components/Home')} />
+  <Route name='app' path='/' handler={Application}>
+    <Route name='about' handler={About} />
+    <DefaultRoute handler={Home} />
   </Route>
 );
