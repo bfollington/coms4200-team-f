@@ -171,19 +171,15 @@ class LearningSwitch (object):
           drop(10)
           return
         # 6
-        log.debug("installing flow for %s.%i -> %s.%i" %
-                  (packet.src, event.port, packet.dst, port))
-
-        log.debug("connection info %s" % self.connection)
 
         pusher.send_message(FlowAddedMessage({
           "source": {
-            "mac": packet.src,
-            "port": event.port
+            "mac": str(packet.src),
+            "port": str(event.port)
           },
           "dest": {
-            "mac": packet.dst,
-            "port": port
+            "mac": str(packet.dst),
+            "port": str(port)
           }
         }))
 
@@ -204,10 +200,23 @@ class l2_learning (object):
     core.openflow.addListeners(self)
     self.transparent = transparent
 
-  def _handle_ConnectionUp (self, event):
-    log.debug("Connection %s" % (event.connection,))
+  def _handle_ConnectionDown(self, event):
+    log.debug("Connection down %s" % (event.connection,))
 
-    pusher.send_message(NewConnectionMessage({"message": "new connection"}))
+    pusher.send_message(LostConnectionMessage({
+      "addr": dpid_to_str(event.connection.dpid)
+    }))
+
+    # TODO, cleanup the LearningSwitch object
+
+
+  def _handle_ConnectionUp (self, event):
+    log.debug("Connection up %s" % (event.connection,))
+
+    pusher.send_message(NewConnectionMessage({
+      "addr": dpid_to_str(event.connection.dpid)
+    }))
+
     LearningSwitch(event.connection, self.transparent)
 
 

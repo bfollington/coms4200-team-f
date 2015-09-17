@@ -44,6 +44,12 @@ class NewConnectionMessage(Message):
 
         super(NewConnectionMessage, self).__init__(data)
 
+class LostConnectionMessage(Message):
+
+    def __init__(self, data):
+
+        super(LostConnectionMessage, self).__init__(data)
+
 class FlowAddedMessage(Message):
 
     def __init__(self, data):
@@ -60,6 +66,7 @@ exports = [
     PacketFloodMessage,
     SystemInitMessage,
     NewConnectionMessage,
+    LostConnectionMessage,
     FlowAddedMessage,
     FlowRemovedMessage
 ]
