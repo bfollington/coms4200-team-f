@@ -3,6 +3,9 @@
 import Pusher from "pusher-js";
 import React from "react";
 
+// From python backend
+import messageData from "../../../../messages.json";
+
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -20,13 +23,16 @@ export default class Home extends React.Component {
   }
 
   componentDidMount() {
-    console.log('binding..');
-    this.pox.bind ('packet_flood', message => {
-      console.log(message);
-      this.setState({
-        messages: this.state.messages.concat(message)
+    console.log('binding..', messageData.messages);
+
+    for (var i = 0; i < messageData.messages.length; i++) {
+      this.pox.bind (messageData.messages[i], message => {
+        this.setState({
+          messages: this.state.messages.concat(message)
+        });
       });
-    });
+    }
+
   }
 
   render() {
@@ -35,7 +41,13 @@ export default class Home extends React.Component {
     return (
       <div className='homePage pageContent'>
         <h1>Homepage</h1>
-        <p>{message}</p>
+        <ul>
+          {
+            this.state.messages.map( message => {
+              return <li>{message.type}, at {message.time} with {message.data}</li>
+            })
+          }
+        </ul>
       </div>
     );
   }
