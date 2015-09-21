@@ -125,7 +125,25 @@ class ClearMessage(Message):
 
         super(ClearMessage, self).__init__({})
 
+class BatchMessage(Message):
 
+    def __init__(self, messages):
+
+        super(BatchMessage, self).__init__({"messages": messages})
+
+    def to_dict(self):
+
+        messages = []
+        for i in self.data["messages"]:
+            messages.append(i.to_dict())
+
+        return {
+            "type": self.get_type(),
+            "time": self.time,
+            "data": {
+                "messages": messages
+            }
+        }
 
 
 
@@ -146,5 +164,6 @@ exports = [
     SwitchHostLinkRemovedMessage,
     LinkAddedMessage,
     LinkRemovedMessage,
-    ClearMessage
+    ClearMessage,
+    BatchMessage
 ]

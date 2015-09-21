@@ -126,8 +126,7 @@ class GephiTopo (object):
       if s in self.switches:
         out.append(add_host_link(h,s))
 
-    for action in out:
-      self.send(action)
+    self.send(BatchMessage(out))
 
   def __handle_host_tracker_HostEvent (self, event):
     # Name is intentionally mangled to keep listen_to_dependencies away
