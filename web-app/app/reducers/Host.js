@@ -1,17 +1,17 @@
 import {
-    ADD_SWITCH, REMOVE_SWITCH
-} from "actions/Switch";
+    ADD_HOST, REMOVE_HOST
+} from "actions/Host";
 
 import { CLEAR_NETWORK } from "actions/ClearNetwork";
 
 import _ from "lodash";
 
-function switchState(state = {
+function hostState(state = {
     items: {}
 }, action) {
     switch (action.type) {
 
-    case ADD_SWITCH:
+    case ADD_HOST:
         return _.assign(state, {
             items: _.assign(state.items, {
                 [action.id]: action.id
@@ -19,7 +19,7 @@ function switchState(state = {
         });
 
 
-    case REMOVE_SWITCH:
+    case REMOVE_HOST:
         return _.assign(state, {
             items: _.assign(state.items, {
                 [action.id]: null
@@ -36,4 +36,4 @@ function switchState(state = {
     }
 }
 
-export default switchState;
+export default hostState;
