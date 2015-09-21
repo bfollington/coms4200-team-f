@@ -13,19 +13,27 @@ import SideNav from "../SideNav";
 import "./style";
 
 import { createStore, combineReducers, compose } from 'redux';
+import { devTools, persistState } from 'redux-devtools';
+import { DevTools, DebugPanel, LogMonitor } from 'redux-devtools/lib/react';
 import Switch from "reducers/Switch";
 
 // From python backend
 import messageData from "../../../../messages.json";
 import PusherDispatcher from "PusherDispatcher";
 
+const finalCreateStore = compose(
+    devTools()
+)(createStore);
+
 export default class Application extends React.Component {
   constructor(props) {
     super(props);
 
-    this.store = createStore(combineReducers({
+    this.store = finalCreateStore(combineReducers({
       Switch
     }));
+
+    console.log(this.store);
 
     this.pusherDispatcher = new PusherDispatcher('b0c3071307e884cae9db', "pox", this.store.dispatch);
     this.pusherDispatcher.subscribeToMessages(messageData.messages);
@@ -48,19 +56,24 @@ export default class Application extends React.Component {
 
   render() {
     return (
-      <Provider store={this.store}>
-      {
-        () => {
-          return (
-            <div className={'application'}>
-              <TopNav onMenuIconButtonTouch={this.onMenuIconButtonTouch.bind(this)}/>
-              <SideNav ref='sideNav' />
-              <RouteHandler />
-            </div>
-          );
+      <div>
+        <Provider store={this.store}>
+        {
+          () => {
+            return (
+              <div className={'application'}>
+                <TopNav onMenuIconButtonTouch={this.onMenuIconButtonTouch.bind(this)}/>
+                <SideNav ref='sideNav' />
+                <RouteHandler />
+              </div>
+            );
+          }
         }
-      }
-      </Provider>
+        </Provider>
+        <DebugPanel top right bottom>
+          <DevTools store={this.store} monitor={LogMonitor} />
+        </DebugPanel>
+      </div>
 
     );
   }
