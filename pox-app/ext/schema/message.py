@@ -123,7 +123,7 @@ class ClearMessage(Message):
 
     def __init__(self):
 
-        super(LinkRemovedMessage, self).__init__({})
+        super(ClearMessage, self).__init__({})
 
 
 
