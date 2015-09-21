@@ -15,7 +15,7 @@ from schema.message import *
 
 
 from switch_logic import LearningSwitch
-from gephi import GephiTopo
+from network_topology import NetworkTopo
 
 log = core.getLogger()
 
@@ -70,5 +70,5 @@ def launch (transparent=False, hold_down=_flood_delay):
     print "GOING DOOOOOWN"
 
   # Pass host_tracker in to enable, uh, host tracking
-  core.registerNew(GephiTopo, core.host_tracker)
+  core.registerNew(NetworkTopo, core.host_tracker)
   core.registerNew(l2_learning, str_to_bool(transparent))

@@ -25,6 +25,7 @@ pox.py openflow.discovery misc.gephi_topo host_tracker forwarding.l2_learning
 
 """
 Based on the original GephiTopo, attribution given above.
+Converted to stream events to Pusher instead of Gephi.
 
 UQ 2015
 """
@@ -83,10 +84,9 @@ class SyncThread(Thread):
 
     def run(self):
         while not self.stopped.wait(30):
-            print "my thread"
             self.callback()
 
-class GephiTopo (object):
+class NetworkTopo (object):
   def __init__ (self, host_tracker=False):
     core.listen_to_dependencies(self)
     core.addListeners(self)
