@@ -16,6 +16,9 @@ import { createStore, combineReducers, compose } from 'redux';
 import { devTools, persistState } from 'redux-devtools';
 import { DevTools, DebugPanel, LogMonitor } from 'redux-devtools/lib/react';
 import Switch from "reducers/Switch";
+import Host from "reducers/Host";
+import HostLink from "reducers/HostLink";
+import Link from "reducers/Link";
 
 // From python backend
 import messageData from "../../../../messages.json";
@@ -30,7 +33,10 @@ export default class Application extends React.Component {
     super(props);
 
     this.store = finalCreateStore(combineReducers({
-      Switch
+      Switch,
+      HostLink,
+      Link,
+      Host
     }));
 
     console.log(this.store);
