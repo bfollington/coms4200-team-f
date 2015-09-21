@@ -29,6 +29,7 @@ class l2_learning (EventMixin):
   def __init__ (self, transparent):
 
     def startup ():
+      core.addListeners(self)
       core.openflow.addListeners(self)
       core.openflow_discovery.addListeners(self)
 
@@ -64,6 +65,9 @@ def launch (transparent=False, hold_down=_flood_delay):
     assert _flood_delay >= 0
   except:
     raise RuntimeError("Expected hold-down to be a number")
+
+  def going_down(event):
+    print "GOING DOOOOOWN"
 
   # Pass host_tracker in to enable, uh, host tracking
   core.registerNew(GephiTopo, core.host_tracker)

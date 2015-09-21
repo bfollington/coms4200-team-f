@@ -29,6 +29,7 @@ Based on the original GephiTopo, attribution given above.
 UQ 2015
 """
 
+from threading import Thread, Event
 
 from pox.core import core
 from pox.lib.util import dpid_to_str
@@ -73,12 +74,22 @@ def add_host_link(h, s):
 def delete_host_link(h, s):
   return SwitchHostLinkRemovedMessage(str(h), str(s))
 
-def clear ():
-  return {'dn':{'filter':'ALL'}}
+
+class SyncThread(Thread):
+    def __init__(self, event, cb):
+        Thread.__init__(self)
+        self.stopped = event
+        self.callback = cb
+
+    def run(self):
+        while not self.stopped.wait(30):
+            print "my thread"
+            self.callback()
 
 class GephiTopo (object):
   def __init__ (self, host_tracker=False):
     core.listen_to_dependencies(self)
+    core.addListeners(self)
     self.switches = set()
     self.links = set()
     self.hosts = {} # mac -> dpid
@@ -89,16 +100,22 @@ class GephiTopo (object):
       host_tracker.addListenerByName("HostEvent",
         self.__handle_host_tracker_HostEvent)
 
+    self.stopSyncThread = Event()
+    self.syncThread = SyncThread(self.stopSyncThread, self.sync)
+    self.syncThread.start()
+
+  def sync(self):
+    self.send_full()
+
   def send (self, data):
-    # for c in clients:
-      # c.send(json.dumps(data) + '\r\n')
     print "Send", data.to_dict()
     pusher.send_message(data)
 
-  def send_full (self, client):
+  def send_full (self):
+    # FIXME: order is not guaranteed for sending, can we batch pusher messages to keep order?
     out = []
 
-    out.append(clear())
+    out.append(reset_graph())
 
     for s in self.switches:
       out.append(add_switch(s))
@@ -110,7 +127,7 @@ class GephiTopo (object):
         out.append(add_host_link(h,s))
 
     for action in out:
-      send(action)
+      self.send(action)
 
   def __handle_host_tracker_HostEvent (self, event):
     # Name is intentionally mangled to keep listen_to_dependencies away
@@ -131,6 +148,11 @@ class GephiTopo (object):
           self.send(add_host_link(h, s))
         else:
           log.warn("Missing switch")
+
+  def _handle_GoingDownEvent(self, event):
+
+    # Stop the sync thread
+    self.stopSyncThread.set()
 
   def _handle_openflow_ConnectionUp (self, event):
     s = dpid_to_str(event.dpid)
