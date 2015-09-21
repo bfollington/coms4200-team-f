@@ -10,7 +10,9 @@ data = {
 }
 
 for m in message.exports:
-    data["messages"].append(m({}).get_type())
+    data["messages"].append(m.__name__)
+
+print data
 
 messages.write(json.dumps(data))
 

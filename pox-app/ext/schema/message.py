@@ -10,9 +10,6 @@ class Message(object):
         self.time = str(datetime.datetime.now())
         self.data = data
 
-    def get_type(self):
-        return self.__class__.__name__
-
     def to_dict(self):
 
         return {
