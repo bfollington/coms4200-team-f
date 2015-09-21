@@ -1,7 +1,11 @@
 from pusher import Pusher
 from pox.core import core
+import logging
 
 log = core.getLogger()
+
+urllib3_logger = logging.getLogger('urllib3')
+urllib3_logger.setLevel(logging.CRITICAL)
 
 STREAM = "pox"
 

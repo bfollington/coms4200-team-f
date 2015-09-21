@@ -32,6 +32,12 @@ class PacketFloodMessage(Message):
 
         super(PacketFloodMessage, self).__init__(data)
 
+class HostEventMessage(Message):
+
+    def __init__(self, data):
+
+        super(HostEventMessage, self).__init__(data)
+
 class SystemInitMessage(Message):
 
     def __init__(self, data):
@@ -62,11 +68,83 @@ class FlowRemovedMessage(Message):
 
         super(FlowRemovedMessage, self).__init__(data)
 
+
+# Specific Messages
+
+class SwitchAddedMessage(Message):
+
+    def __init__(self, id=""):
+
+        super(SwitchAddedMessage, self).__init__({'id': id})
+
+class SwitchRemovedMessage(Message):
+
+    def __init__(self, id=""):
+
+        super(SwitchRemovedMessage, self).__init__({'id': id})
+
+class HostAddedMessage(Message):
+
+    def __init__(self, id=""):
+
+        super(HostAddedMessage, self).__init__({'id': id})
+
+class HostRemovedMessage(Message):
+
+    def __init__(self, id=""):
+
+        super(HostRemovedMessage, self).__init__({'id': id})
+
+class SwitchHostLinkAddedMessage(Message):
+
+    def __init__(self, host="", switch=""):
+
+        super(SwitchHostLinkAddedMessage, self).__init__({'host': host, 'switch': switch})
+
+class SwitchHostLinkRemovedMessage(Message):
+
+    def __init__(self, host="", switch=""):
+
+        super(SwitchHostLinkRemovedMessage, self).__init__({'host': host, 'switch': switch})
+
+class LinkAddedMessage(Message):
+
+    def __init__(self, start="", end=""):
+
+        super(LinkAddedMessage, self).__init__({'start': start, 'end': end})
+
+class LinkRemovedMessage(Message):
+
+    def __init__(self, start="", end=""):
+
+        super(LinkRemovedMessage, self).__init__({'start': start, 'end': end})
+
+class ClearMessage(Message):
+
+    def __init__(self):
+
+        super(LinkRemovedMessage, self).__init__({})
+
+
+
+
+
+
 exports = [
     PacketFloodMessage,
     SystemInitMessage,
     NewConnectionMessage,
     LostConnectionMessage,
     FlowAddedMessage,
-    FlowRemovedMessage
+    FlowRemovedMessage,
+    HostEventMessage,
+    SwitchAddedMessage,
+    SwitchRemovedMessage,
+    HostAddedMessage,
+    HostRemovedMessage,
+    SwitchHostLinkAddedMessage,
+    SwitchHostLinkRemovedMessage,
+    LinkAddedMessage,
+    LinkRemovedMessage,
+    ClearMessage
 ]
