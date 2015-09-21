@@ -15,7 +15,7 @@ from schema.message import *
 
 
 from switch_logic import LearningSwitch
-from gephi import NetworkTopo
+from network_topology import NetworkTopo
 
 log = core.getLogger()
 
