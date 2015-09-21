@@ -3,9 +3,15 @@
 import Pusher from "pusher-js";
 import React from "react";
 
-// From python backend
-import messageData from "../../../../messages.json";
+import {connect} from "react-redux";
 
+@connect(
+  state => (
+    {
+      switches: state.Switch.items
+    }
+  )
+)
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -13,25 +19,6 @@ export default class Home extends React.Component {
     this.state = {
       messages: []
     };
-
-  }
-
-  componentWillMount() {
-    console.log('init..');
-    this.pusher = new Pusher('b0c3071307e884cae9db');
-    this.pox = this.pusher.subscribe('pox');
-  }
-
-  componentDidMount() {
-    console.log('binding..', messageData.messages);
-
-    for (var i = 0; i < messageData.messages.length; i++) {
-      this.pox.bind (messageData.messages[i], message => {
-        this.setState({
-          messages: this.state.messages.concat(message)
-        });
-      });
-    }
 
   }
 
