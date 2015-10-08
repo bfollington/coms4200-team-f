@@ -3,6 +3,8 @@
 import json
 import datetime
 
+from const import STAT_SAMPLING_PERIOD
+
 class Message(object):
 
     def __init__(self, data):
@@ -109,15 +111,95 @@ class SwitchHostLinkRemovedMessage(Message):
 
 class LinkAddedMessage(Message):
 
-    def __init__(self, start="", end=""):
+    def __init__(self, start="", start_port=-1, end="", end_port=-1):
 
-        super(LinkAddedMessage, self).__init__({'start': start, 'end': end})
+        super(LinkAddedMessage, self).__init__({'start': start, "start_port": start_port, 'end': end, "end_port": end_port})
 
 class LinkRemovedMessage(Message):
 
     def __init__(self, start="", end=""):
 
         super(LinkRemovedMessage, self).__init__({'start': start, 'end': end})
+
+class PortStatsMessage(Message):
+
+    def __init__(self, rx_packets, tx_packets, rx_bytes, tx_bytes, port_no):
+
+        super(PortStatsMessage, self).__init__({
+            "rx_packets": rx_packets,
+            "tx_packets": tx_packets,
+            "rx_bytes": rx_bytes,
+            "tx_bytes": tx_bytes,
+            "port_no": port_no
+        })
+
+class SwitchStatsMessage(Message):
+
+    def __init__(self, id, port_stats):
+
+        super(SwitchStatsMessage, self).__init__({'id': id, "ports": port_stats})
+
+    def to_dict(self):
+
+        ports = []
+        for i in self.data["ports"]:
+            ports.append(i.to_dict())
+
+        return {
+            "type": self.get_type(),
+            "time": self.time,
+            "data": {
+                "id": self.data["id"],
+                "ports": ports,
+                "sampling_period": STAT_SAMPLING_PERIOD
+            }
+        }
+
+class FlowStatsMessage(Message):
+
+    def __init__(self, dpid, bytes, packets, ethernet_source=None, ethernet_dest=None, ip_source=None, ip_dest=None, ip_protocol=None, tcp_source=None, tcp_dest=None):
+
+        super(FlowStatsMessage, self).__init__({
+            'dpid': dpid,
+            'bytes': bytes,
+            'packets': packets,
+            'ethernet_source': str(ethernet_source),
+            'ethernet_dest': str(ethernet_dest),
+            'ip_source': ip_source,
+            'ip_dest': ip_dest,
+            'ip_protocol': ip_protocol,
+            'tcp_source': tcp_source,
+            'tcp_dest': tcp_dest
+        })
+
+class AllFlowStatsForSwitchMessage(Message):
+
+    def __init__(self, flows, total_bytes, total_packets, total_flows):
+
+        super(AllFlowStatsForSwitchMessage, self).__init__({
+            "flows": flows,
+            "total_bytes": total_bytes,
+            "total_flows": total_flows,
+            "total_packets": total_packets
+        })
+
+    def to_dict(self):
+
+        flows = []
+        for i in self.data["flows"]:
+            flows.append(i.to_dict())
+
+        return {
+            "type": self.get_type(),
+            "time": self.time,
+            "data": {
+                "total_bytes": self.data["total_bytes"],
+                "total_packets": self.data["total_packets"],
+                "total_flows": self.data["total_flows"],
+                "flows": flows,
+                "sampling_period": STAT_SAMPLING_PERIOD
+            }
+        }
 
 class ClearMessage(Message):
 
@@ -144,26 +226,3 @@ class BatchMessage(Message):
                 "messages": messages
             }
         }
-
-
-
-
-exports = [
-    PacketFloodMessage,
-    SystemInitMessage,
-    NewConnectionMessage,
-    LostConnectionMessage,
-    FlowAddedMessage,
-    FlowRemovedMessage,
-    HostEventMessage,
-    SwitchAddedMessage,
-    SwitchRemovedMessage,
-    HostAddedMessage,
-    HostRemovedMessage,
-    SwitchHostLinkAddedMessage,
-    SwitchHostLinkRemovedMessage,
-    LinkAddedMessage,
-    LinkRemovedMessage,
-    ClearMessage,
-    BatchMessage
-]
