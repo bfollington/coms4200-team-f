@@ -16,6 +16,15 @@ import {
 
 import { clearNetwork } from "actions/ClearNetwork";
 
+const SPECIAL_CASE = {
+    // if we get a BatchMessage, we want to extract all the actions and dispatch them one by one
+    "BatchMessage": (message, dispatch) => {
+        message.data.messages.map(m => {
+            dispatch(ACTION_MAP[m.type](m)); // So readable...
+        })
+    }
+}
+
 const ACTION_MAP = {
     "SwitchAddedMessage": message => addSwitch(message.data.id),
     "SwitchRemovedMessage": message => removeSwitch(message.data.id),
@@ -40,13 +49,18 @@ export default class PusherDispatcher {
     onMessage(message) {
       console.log("Received", message);
 
-      if (ACTION_MAP[message.type]) {
-        this.dispatch(ACTION_MAP[message.type](message));
+      if (SPECIAL_CASE[message.type]) {
+        SPECIAL_CASE[message.type](message, this.dispatch);
       } else {
-        console.warn("Pusher message was received with no action mapping", message);
+        if (ACTION_MAP[message.type]) {
+          this.dispatch(ACTION_MAP[message.type](message));
+        } else {
+          console.warn("Pusher message was received with no action mapping", message);
+        }
       }
     }
 
+    // Provide a list of message ids to subscribe to, can be used to filter the stream
     subscribeToMessages(messages) {
         for (var i = 0; i < messages.length; i++) {
           console.log('Binding message', messages[i]);
