@@ -177,7 +177,7 @@ class AllFlowStatsForSwitchMessage(Message):
     def __init__(self, id, flows, total_bytes, total_packets, total_flows):
 
         super(AllFlowStatsForSwitchMessage, self).__init__({
-            "id": id
+            "id": id,
             "flows": flows,
             "total_bytes": total_bytes,
             "total_flows": total_flows,
