@@ -11,6 +11,7 @@ import TopNav from "../TopNav";
 import SideNav from "../SideNav";
 
 import "./style";
+require('../../styles/stylesheets/_bootstrap');
 
 import { createStore, combineReducers, compose } from 'redux';
 import { devTools, persistState } from 'redux-devtools';

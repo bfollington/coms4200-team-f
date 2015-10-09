@@ -2,11 +2,13 @@
 
 import Pusher from "pusher-js";
 import React from "react";
+import { Row } from "react-bootstrap";
+
+import NetworkGraph from "../NetworkGraph";
 
 import _ from "lodash";
 
 import {connect} from "react-redux";
-import DisplayTable from "components/DisplayTable";
 
 @connect(
   state => (
@@ -21,51 +23,74 @@ import DisplayTable from "components/DisplayTable";
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
+    this.nodes = null;
+    this.edge = null;
+  }
 
-    this.state = {
-      messages: []
-    };
+  mapToNodes(devices, type) {
+    let nodes = [];
+    _.keys(devices).map( id => {
+      nodes.push({
+        id: id,
+        label: id,
+        type: type
+      });
+    });
 
+    return nodes;
+  }
+
+  mapToEdges(links, type) {
+    let edges = [];
+    _.keys(links).map( id => {
+      edges.push({
+        id: id,
+        from: links[id].from,
+        to: links[id].to,
+        type: type
+      });
+    });
+
+    return edges;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const hostNodes = this.mapToNodes(nextProps.hosts, 'host');
+    const switchNodes = this.mapToNodes(nextProps.switches, 'switch');
+    const linkEdges = this.mapToEdges(nextProps.links, 'link');
+    const hostLinkEdges = this.mapToEdges(nextProps.hostLinks, 'hostLink');
+
+    const nodes = _.merge(hostNodes, switchNodes);
+    const edges = _.merge(linkEdges, hostLinkEdges);
+
+    console.log({
+      nodes: nodes,
+      edges: edges
+    });
+
+    // TODO: Pick one of these.. preferably #2 if it can be unfucked
+
+    // Method #2: Just re-draws the canvas with new data.. doesn't look nice but seems to work
+    this.refs.networkGraph.network.setData({
+      nodes: nodes,
+      edges: edges
+    });
+
+    // Method #2: Draws nodes nicely but is buggy trying add duplicate ids sometimes (host/switch same ids??)
+    /*
+    this.refs.networkGraph.nodes.add(nodes);
+    this.refs.networkGraph.edges.add(edges);
+    */
   }
 
   render() {
-    var message = this.state.messages.length ? this.state.messages[0] : 'No messages yet.';
+    let nodes = [];
 
-    var switches = [];
-    _.keys(this.props.switches).map( s => {
-      switches.push([s, this.props.switches[s] ? "True" : "False"]);
-    });
-
-    var hosts = [];
-    _.keys(this.props.hosts).map( h => {
-      hosts.push([h, this.props.hosts[h] ? "True" : "False"]);
-    });
-
-    var hostLinks = [];
-    _.keys(this.props.hostLinks).map( h => {
-      hostLinks.push([h, this.props.hostLinks[h].host, this.props.hostLinks[h]._switch, this.props.hostLinks[h].isUp ? "True" : "False"]);
-    });
-
-    var links = [];
-    _.keys(this.props.links).map( id => {
-      links.push([id, this.props.links[id].from, this.props.links[id].to, this.props.links[id].isUp ? "True" : "False"]);
-    });
+    let edges = [];
 
     return (
       <div className='homePage pageContent'>
-        <h1>Homepage</h1>
-
-        <h2>Switches</h2>
-        <DisplayTable headings={["ID", "Exists?"]} rows={switches} />
-
-        <h2>Links</h2>
-        <DisplayTable headings={["ID", "From", "To", "Online?"]} rows={links} />
-
-        <h2>Hosts</h2>
-        <DisplayTable headings={["ID", "Exists?"]} rows={hosts} />
-
-        <h2>Host Links</h2>
-        <DisplayTable headings={["ID", "Host", "Switch", "Online?"]} rows={hostLinks} />
+        <NetworkGraph ref='networkGraph' nodes={nodes} edges={edges} />
       </div>
     );
   }
