@@ -1,7 +1,7 @@
 
 export const ADD_LINK = "ADD_LINK";
-export function addLink(from, to) {
-    return {type: ADD_LINK, from, to};
+export function addLink(from, from_port, to, to_port) {
+    return {type: ADD_LINK, from, from_port, to, to_port};
 }
 
 export const REMOVE_LINK = "REMOVE_LINK";

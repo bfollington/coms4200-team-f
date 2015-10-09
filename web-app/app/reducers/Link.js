@@ -21,7 +21,9 @@ function linkState(state = {
     case ADD_LINK:
         return _.assign(state, {
             from: action.from,
+            from_port: action.from_port,
             to: action.to,
+            to_port: action.to_port,
             isUp: true
         });
 
@@ -29,7 +31,9 @@ function linkState(state = {
     case REMOVE_LINK:
         return _.assign(state, {
             from: null,
+            from_port: null,
             to: null,
+            to_port: null,
             isUp: false
         });
 
@@ -43,6 +47,8 @@ function link(state = {
     items: {}
 }, action) {
     switch (action.type) {
+
+    // TODO: handle port stats messages and calculate link traffic using dpid and port num
 
     case ADD_LINK:
     case REMOVE_LINK:
