@@ -11,3 +11,13 @@ export function removeSwitch(id) {
 
     return {type: REMOVE_SWITCH, id};
 }
+
+export const UPDATE_FLOW_STATS = "UPDATE_FLOW_STATS";
+export function updateFlowStats(id, total_bytes, total_packets, total_flows, flows, sampling_period) {
+    return {type: UPDATE_FLOW_STATS, id, total_bytes, total_packets, total_flows, flows, sampling_period};
+}
+
+export const UPDATE_PORT_STATS = "UPDATE_PORT_STATS";
+export function updatePortStats(id, ports, sampling_period) {
+    return {type: UPDATE_PORT_STATS, id, ports, sampling_period};
+}
