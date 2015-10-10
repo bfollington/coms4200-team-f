@@ -9,7 +9,7 @@ from schema.message import *
 
 log = core.getLogger()
 STREAM = "pox"
-PUSHER_SEND_FREQUENCY = 5
+PUSHER_SEND_FREQUENCY = 10
 
 pusher = Pusher(
     app_id='139897',
@@ -39,17 +39,26 @@ def send_message(message):
     global queue
     queue.append( message )
     log.debug("Queue message %s" % message.to_dict())
+    if (len(queue) > 5):
+        send_message_actual()
+
+def send_message_immediate(message):
+    pusher.trigger(STREAM, message.get_type(), message.to_dict())
+
+def send_message_actual():
+    global queue
+    message = BatchMessage(queue)
+
+    # Clear the queue, Python is weird sometimes
+    send_message_immediate(message)
+    print queue
+    del queue[:]
 
 def send_next_from_queue():
 
     global queue
     if len(queue) > 0:
-        message = BatchMessage(queue)
-
-        # Clear the queue, Python is weird sometimes
-        pusher.trigger(STREAM, message.get_type(), message.to_dict())
-        print queue
-        del queue[:]
+        send_message_actual()
     else:
         return
 

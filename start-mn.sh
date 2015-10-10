@@ -1,1 +1,1 @@
-sudo mn --topo linear,3 --mac --controller remote --switch ovsk
+sudo mn --topo tree,3 --mac --controller remote --switch ovsk

@@ -100,7 +100,7 @@ class NetworkTopo(object):
 
         self.stopSyncThread = Event()
         self.syncThread = TimerThread(self.stopSyncThread, self.sync, 30)
-        self.syncThread.start()
+        # self.syncThread.start()
 
     def sync(self):
         self.send_full()
@@ -121,7 +121,7 @@ class NetworkTopo(object):
         for s in self.switches:
             out.append(add_switch(s))
         for e in self.links:
-            out.append(add_link(e[0], e[1], e[2], e[3]))
+            out.append(add_link(e[0], e[2], e[1], e[3]))
         for h,s in self.hosts.iteritems():
             out.append(add_host(h))
             if s in self.switches:

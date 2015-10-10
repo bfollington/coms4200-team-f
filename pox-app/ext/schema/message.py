@@ -165,8 +165,8 @@ class FlowStatsMessage(Message):
             'packets': packets,
             'ethernet_source': str(ethernet_source),
             'ethernet_dest': str(ethernet_dest),
-            'ip_source': ip_source,
-            'ip_dest': ip_dest,
+            'ip_source': str(ip_source),
+            'ip_dest': str(ip_dest),
             'ip_protocol': ip_protocol,
             'tcp_source': tcp_source,
             'tcp_dest': tcp_dest
@@ -174,11 +174,11 @@ class FlowStatsMessage(Message):
 
 class AllFlowStatsForSwitchMessage(Message):
 
-    def __init__(self, id, flows, total_bytes, total_packets, total_flows):
+    def __init__(self, id, total_bytes, total_packets, total_flows):
 
         super(AllFlowStatsForSwitchMessage, self).__init__({
             "id": id,
-            "flows": flows,
+            # "flows": flows,
             "total_bytes": total_bytes,
             "total_flows": total_flows,
             "total_packets": total_packets
@@ -186,9 +186,9 @@ class AllFlowStatsForSwitchMessage(Message):
 
     def to_dict(self):
 
-        flows = []
-        for i in self.data["flows"]:
-            flows.append(i.to_dict())
+        # flows = []
+        # for i in self.data["flows"]:
+        #     flows.append(i.to_dict())
 
         return {
             "type": self.get_type(),
@@ -198,7 +198,7 @@ class AllFlowStatsForSwitchMessage(Message):
                 "total_bytes": self.data["total_bytes"],
                 "total_packets": self.data["total_packets"],
                 "total_flows": self.data["total_flows"],
-                "flows": flows,
+                # "flows": flows,
                 "sampling_period": STAT_SAMPLING_PERIOD
             }
         }

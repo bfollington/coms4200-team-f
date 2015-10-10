@@ -30,13 +30,13 @@ def request_stats():
     # Request both port and flow stats for each connection
     # Event handler will receive the results
     for conn in get_connection_list():
-        conn.send( of.ofp_stats_request(body=of.ofp_port_stats_request()) )
+        # conn.send( of.ofp_stats_request(body=of.ofp_port_stats_request()) )
         conn.send( of.ofp_stats_request(body=of.ofp_flow_stats_request()) )
 
     log.debug("{0} connections to check".format(len(get_connection_list())))
 
 def send(data):
-    pusher.send_message(data)
+    pusher.send_message_immediate(data)
 
 class NetworkStats(object):
 
@@ -80,7 +80,7 @@ class NetworkStats(object):
             total_packets += stats.packet_count
             total_flows += 1
 
-        message = AllFlowStatsForSwitchMessage(dpid, flows, total_bytes, total_packets, total_flows)
+        message = AllFlowStatsForSwitchMessage(dpid, total_bytes, total_packets, total_flows)
         send(message)
 
 
