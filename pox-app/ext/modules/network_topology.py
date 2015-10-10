@@ -100,7 +100,7 @@ class NetworkTopo(object):
 
         self.stopSyncThread = Event()
         self.syncThread = TimerThread(self.stopSyncThread, self.sync, 30)
-        # self.syncThread.start()
+        self.syncThread.start()
 
     def sync(self):
         self.send_full()
