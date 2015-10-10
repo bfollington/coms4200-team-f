@@ -9,7 +9,7 @@ from schema.message import *
 
 log = core.getLogger()
 STREAM = "pox"
-PUSHER_SEND_FREQUENCY = 10
+PUSHER_SEND_FREQUENCY = 5
 
 pusher = Pusher(
     app_id='139897',
@@ -39,7 +39,7 @@ def send_message(message):
     global queue
     queue.append( message )
     log.debug("Queue message %s" % message.to_dict())
-    if (len(queue) > 5):
+    if (len(queue) > 8):
         send_message_actual()
 
 def send_message_immediate(message):

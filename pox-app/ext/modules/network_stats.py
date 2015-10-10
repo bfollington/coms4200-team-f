@@ -30,8 +30,8 @@ def request_stats():
     # Request both port and flow stats for each connection
     # Event handler will receive the results
     for conn in get_connection_list():
-        # conn.send( of.ofp_stats_request(body=of.ofp_port_stats_request()) )
-        conn.send( of.ofp_stats_request(body=of.ofp_flow_stats_request()) )
+        conn.send( of.ofp_stats_request(body=of.ofp_port_stats_request()) )
+        # conn.send( of.ofp_stats_request(body=of.ofp_flow_stats_request()) )
 
     log.debug("{0} connections to check".format(len(get_connection_list())))
 

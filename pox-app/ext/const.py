@@ -2,4 +2,4 @@
 # Can be overriden on commandline.
 _flood_delay = 0
 
-STAT_SAMPLING_PERIOD = 15
+STAT_SAMPLING_PERIOD = 10
