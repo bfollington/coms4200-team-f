@@ -37,11 +37,11 @@ const ACTION_MAP = {
     "LinkRemovedMessage": message => removeLink(message.data.start, message.data.end),
     "ClearMessage": message => clearNetwork(),
     "SwitchStatsMessage": message => updatePortStats(message.data.id, message.data.ports, message.data.sampling_period),
-    "AllFlowStatsForSwitchMessage": message => updateFlowStats(message.data.id, message.data.total_bytes, message.data.total_packets, message.data.total_flows, message.data.flows, message.data.sampling_period)
+    // "AllFlowStatsForSwitchMessage": message => updateFlowStats(message.data.id, message.data.total_bytes, message.data.total_packets, message.data.total_flows, message.data.flows, message.data.sampling_period)
 };
 
 function processMessage(message, dispatch) {
-    console.log("Received", message);
+    // console.log("Received", message);
 
     if (SPECIAL_CASE[message.type]) {
         SPECIAL_CASE[message.type](message, dispatch);
@@ -61,6 +61,19 @@ export default class PusherDispatcher {
 
         this.pusher = new Pusher(apiKey);
         this.stream = this.pusher.subscribe(stream);
+
+        // dispatch(addSwitch("s1"));
+        // dispatch(addSwitch("s2"));
+        // dispatch(addSwitch("s3"));
+
+        // dispatch(addHost("h1"));
+        // dispatch(addHost("h2"));
+
+        // dispatch(addLink("s3", 1, "s2", 1));
+        // dispatch(addLink("s1", 1, "s2", 2));
+
+        // dispatch(addHostLink("h1", "s2"));
+        // dispatch(addHostLink("h2", "s2"));
     }
 
     onMessage(message) {

@@ -11,7 +11,7 @@ import TopNav from "../TopNav";
 import SideNav from "../SideNav";
 
 import "./style";
-require('../../styles/stylesheets/_bootstrap');
+// require('../../styles/stylesheets/_bootstrap');
 
 import { createStore, combineReducers, compose } from 'redux';
 import { devTools, persistState } from 'redux-devtools';
@@ -25,9 +25,7 @@ import Link from "reducers/Link";
 import messageData from "../../../../messages.json";
 import PusherDispatcher from "PusherDispatcher";
 
-const finalCreateStore = compose(
-    devTools()
-)(createStore);
+const finalCreateStore = createStore;
 
 export default class Application extends React.Component {
   constructor(props) {
@@ -77,9 +75,9 @@ export default class Application extends React.Component {
           }
         }
         </Provider>
-        <DebugPanel top right bottom>
+        {/*<DebugPanel top right bottom>
           <DevTools store={this.store} monitor={LogMonitor} />
-        </DebugPanel>
+        </DebugPanel>*/}
       </div>
 
     );
