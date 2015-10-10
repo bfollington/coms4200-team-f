@@ -16,13 +16,14 @@ import {
 
 import { clearNetwork } from "actions/ClearNetwork";
 
+
 const SPECIAL_CASE = {
-    // if we get a BatchMessage, we want to extract all the actions and dispatch them one by one
-    // "BatchMessage": (message, dispatch) => {
-    //     message.data.messages.map(m => {
-    //         dispatch(ACTION_MAP[m.type](m)); // So readable...
-    //     })
-    // }
+    //if we get a BatchMessage, we want to extract all the actions and dispatch them one by one
+    "BatchMessage": (message, dispatch) => {
+        message.data.messages.map(m => {
+            processMessage(m, dispatch);
+        })
+    }
 }
 
 const ACTION_MAP = {
@@ -34,10 +35,24 @@ const ACTION_MAP = {
     "SwitchHostLinkRemovedMessage": message => removeHostLink(message.data.host, message.data.switch),
     "LinkAddedMessage": message => addLink(message.data.start, message.data.start_port, message.data.end, message.data.end_port),
     "LinkRemovedMessage": message => removeLink(message.data.start, message.data.end),
-    // "ClearMessage": message => clearNetwork(),
+    "ClearMessage": message => clearNetwork(),
     "SwitchStatsMessage": message => updatePortStats(message.data.id, message.data.ports, message.data.sampling_period),
     "AllFlowStatsForSwitchMessage": message => updateFlowStats(message.data.id, message.data.total_bytes, message.data.total_packets, message.data.total_flows, message.data.flows, message.data.sampling_period)
 };
+
+function processMessage(message, dispatch) {
+    console.log("Received", message);
+
+    if (SPECIAL_CASE[message.type]) {
+        SPECIAL_CASE[message.type](message, dispatch);
+    } else {
+        if (ACTION_MAP[message.type]) {
+            dispatch(ACTION_MAP[message.type](message));
+        } else {
+            console.warn("Pusher message was received with no action mapping", message);
+        }
+    }
+}
 
 export default class PusherDispatcher {
     constructor(apiKey, stream, dispatch) {
@@ -49,17 +64,7 @@ export default class PusherDispatcher {
     }
 
     onMessage(message) {
-      console.log("Received", message);
-
-      if (SPECIAL_CASE[message.type]) {
-        SPECIAL_CASE[message.type](message, this.dispatch);
-      } else {
-        if (ACTION_MAP[message.type]) {
-          this.dispatch(ACTION_MAP[message.type](message));
-        } else {
-          console.warn("Pusher message was received with no action mapping", message);
-        }
-      }
+        processMessage(message, this.dispatch);
     }
 
     // Provide a list of message ids to subscribe to, can be used to filter the stream
