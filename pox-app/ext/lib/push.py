@@ -2,12 +2,14 @@ from pusher import Pusher
 from pox.core import core
 import logging
 
+from collections import deque
+from modules.timer_thread import TimerThread
+from threading import Event
+from schema.message import *
+
 log = core.getLogger()
-
-urllib3_logger = logging.getLogger('urllib3')
-urllib3_logger.setLevel(logging.CRITICAL)
-
 STREAM = "pox"
+PUSHER_SEND_FREQUENCY = 5
 
 pusher = Pusher(
     app_id='139897',
@@ -15,7 +17,39 @@ pusher = Pusher(
     secret='a8dfd219b67ef6c902c7'
 )
 
-def send_message(message):
+urllib3_logger = logging.getLogger('urllib3')
+urllib3_logger.setLevel(logging.CRITICAL)
 
-    log.debug("Sending message %s" % message.to_dict())
-    pusher.trigger(STREAM, message.get_type(), message.to_dict())
+class PusherThread(TimerThread):
+    def __init__(self, cb, time):
+        TimerThread.__init__(self, Event(), cb, time)
+        print "NEW PUSHER THREAD"
+        self.setDaemon(True)
+
+
+queue = []
+pusher_thread = None
+
+def send_message(message):
+    global pusher_thread
+    if pusher_thread == None:
+        pusher_thread = PusherThread(send_next_from_queue, PUSHER_SEND_FREQUENCY)
+        pusher_thread.start()
+
+    global queue
+    queue.append( message )
+    log.debug("Queue message %s" % message.to_dict())
+
+def send_next_from_queue():
+
+    global queue
+    if len(queue) > 0:
+        message = BatchMessage(queue)
+
+        # Clear the queue, Python is weird sometimes
+        pusher.trigger(STREAM, message.get_type(), message.to_dict())
+        print queue
+        del queue[:]
+    else:
+        return
+
