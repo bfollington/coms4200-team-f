@@ -59,11 +59,12 @@ class NetworkStats(object):
         total_bytes = 0
         total_flows = 0
         total_packets = 0
+        dpid = dpidToStr(event.connection.dpid)
 
         for stats in event.stats:
 
             flows.append(FlowStatsMessage(
-                dpidToStr(event.connection.dpid),
+                dpid,
                 stats.byte_count,
                 stats.packet_count,
                 ethernet_source=stats.match.dl_src,
@@ -79,7 +80,7 @@ class NetworkStats(object):
             total_packets += stats.packet_count
             total_flows += 1
 
-        message = AllFlowStatsForSwitchMessage(flows, total_bytes, total_packets, total_flows)
+        message = AllFlowStatsForSwitchMessage(dpid, flows, total_bytes, total_packets, total_flows)
         send(message)
 
 

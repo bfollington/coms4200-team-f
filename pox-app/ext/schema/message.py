@@ -174,9 +174,10 @@ class FlowStatsMessage(Message):
 
 class AllFlowStatsForSwitchMessage(Message):
 
-    def __init__(self, flows, total_bytes, total_packets, total_flows):
+    def __init__(self, id, flows, total_bytes, total_packets, total_flows):
 
         super(AllFlowStatsForSwitchMessage, self).__init__({
+            "id": id,
             "flows": flows,
             "total_bytes": total_bytes,
             "total_flows": total_flows,
@@ -193,6 +194,7 @@ class AllFlowStatsForSwitchMessage(Message):
             "type": self.get_type(),
             "time": self.time,
             "data": {
+                "id": self.data["id"],
                 "total_bytes": self.data["total_bytes"],
                 "total_packets": self.data["total_packets"],
                 "total_flows": self.data["total_flows"],
