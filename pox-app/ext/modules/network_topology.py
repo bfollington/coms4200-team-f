@@ -127,7 +127,7 @@ class NetworkTopo(object):
             if s in self.switches:
                 out.append(add_host_link(h,s))
 
-        self.send(BatchMessage(out))
+        self.send(SyncMessage(out))
 
     def __handle_host_tracker_HostEvent (self, event):
         # Name is intentionally mangled to keep listen_to_dependencies away

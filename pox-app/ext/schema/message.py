@@ -228,3 +228,23 @@ class BatchMessage(Message):
                 "messages": messages
             }
         }
+
+class SyncMessage(Message):
+
+    def __init__(self, messages):
+
+        super(SyncMessage, self).__init__({"messages": messages})
+
+    def to_dict(self):
+
+        messages = []
+        for i in self.data["messages"]:
+            messages.append(i.to_dict())
+
+        return {
+            "type": self.get_type(),
+            "time": self.time,
+            "data": {
+                "messages": messages
+            }
+        }
