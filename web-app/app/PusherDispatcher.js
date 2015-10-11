@@ -16,15 +16,35 @@ import {
 
 import { clearNetwork } from "actions/ClearNetwork";
 
+import History from "History";
+
+var history = new History();
+window.eventHistory = history;
 
 const SPECIAL_CASE = {
     //if we get a BatchMessage, we want to extract all the actions and dispatch them one by one
-    "BatchMessage": (message, dispatch) => {
+    "BatchMessage": (message, dispatch, store) => {
         message.data.messages.map(m => {
-            processMessage(m, dispatch);
+            processMessage(m, dispatch, store, false);
+        })
+    },
+    "SyncMessage": (message, dispatch, store) => {
+        message.data.messages.map(m => {
+            processMessage(m, dispatch, store, true);
         })
     }
 }
+
+const HISTORY_EVENTS = [
+    "SwitchAddedMessage",
+    "SwitchRemovedMessage",
+    "HostAddedMessage",
+    "HostRemovedMessage",
+    "SwitchHostLinkAddedMessage",
+    "SwitchHostLinkRemovedMessage",
+    "LinkAddedMessage",
+    "LinkRemovedMessage"
+];
 
 const ACTION_MAP = {
     "SwitchAddedMessage": message => addSwitch(message.data.id),
@@ -40,13 +60,17 @@ const ACTION_MAP = {
     // "AllFlowStatsForSwitchMessage": message => updateFlowStats(message.data.id, message.data.total_bytes, message.data.total_packets, message.data.total_flows, message.data.flows, message.data.sampling_period)
 };
 
-function processMessage(message, dispatch) {
+function processMessage(message, dispatch, store, isSyncMessage = false) {
     // console.log("Received", message);
 
     if (SPECIAL_CASE[message.type]) {
-        SPECIAL_CASE[message.type](message, dispatch);
+        SPECIAL_CASE[message.type](message, dispatch, store);
     } else {
         if (ACTION_MAP[message.type]) {
+            if (!isSyncMessage && HISTORY_EVENTS.indexOf(message.type) >= 0) {
+                history.addEvent(message.time, message, store.getState());
+            }
+
             dispatch(ACTION_MAP[message.type](message));
         } else {
             console.warn("Pusher message was received with no action mapping", message);
@@ -55,8 +79,9 @@ function processMessage(message, dispatch) {
 }
 
 export default class PusherDispatcher {
-    constructor(apiKey, stream, dispatch) {
-        this.dispatch = dispatch;
+    constructor(apiKey, stream, store) {
+        this.dispatch = store.dispatch;
+        this.store = store;
         this.apiKey = apiKey;
 
         this.pusher = new Pusher(apiKey);
@@ -77,7 +102,7 @@ export default class PusherDispatcher {
     }
 
     onMessage(message) {
-        processMessage(message, this.dispatch);
+        processMessage(message, this.dispatch, this.store);
     }
 
     // Provide a list of message ids to subscribe to, can be used to filter the stream

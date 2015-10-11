@@ -1,10 +1,7 @@
 'use strict';
 
-import Pusher from "pusher-js";
 import React from "react";
-//import { Row } from "react-bootstrap";
 
-import NetworkGraph from "../NetworkGraph";
 import EventGraph from "../EventGraph";
 
 import _ from "lodash";
@@ -21,19 +18,17 @@ import {connect} from "react-redux";
     }
   )
 )
-export default class Home extends React.Component {
+export default class Timeline extends React.Component {
   constructor(props) {
     super(props);
-    this.nodes = null;
-    this.edge = null;
   }
 
 
   render() {
 
     return (
-      <div className='homePage pageContent'>
-        <NetworkGraph ref='networkGraph' switches={this.props.switches} links={this.props.links} hosts={this.props.hosts} hostLinks={this.props.hostLinks} />
+      <div className='timelinePage pageContent'>
+        <EventGraph ref='eventGraph' />
       </div>
     );
   }

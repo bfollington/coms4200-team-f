@@ -6,6 +6,9 @@ import vis from "vis";
 
 import _ from "lodash";
 
+import {SwitchInspector} from "./SwitchInspector";
+import {HostInspector} from "./HostInspector";
+
 require('./style');
 
 function mapToNodes(devices, type) {
@@ -38,8 +41,10 @@ function mapToEdges(links, type) {
 export default class NetworkGraph extends React.Component {
   constructor(props) {
     super(props);
-    this.nodes = new vis.DataSet();
-    this.edges = new vis.DataSet();
+
+    this.state = {
+      selectedNodes: []
+    };
 
     this.options = {
       height: '600px',
@@ -52,7 +57,20 @@ export default class NetworkGraph extends React.Component {
         },
         scaling: {
           min: 1,
-          max: 8
+          max: 8,
+          label: {
+            enabled: false
+          }
+        }
+      },
+      groups: {
+        "switch": {
+          shape: "triangle",
+          color: "#FF5722"
+        },
+        "host": {
+          shape: "dot",
+          color: "#1976D2"
         }
       },
       physics: {
@@ -65,16 +83,16 @@ export default class NetworkGraph extends React.Component {
 
     this.network = null;
     this.networkAnimating = false;
-    this.interval = setInterval(this.updateGraph.bind(this), 1000);
+
   }
 
   updateGraph() {
     var hostNodes = _.keys(this.props.hosts)
       .filter(hostId => this.props.hosts[hostId] !== null)
-      .map(hostId => ({id: hostId, label: hostId, group: 0}));
+      .map(hostId => ({id: hostId, label: hostId, group: "host"}));
     var switchNodes = _.keys(this.props.switches)
       .filter(switchId => this.props.switches[switchId] !== null)
-      .map(switchId => ({id: switchId, label: switchId, group: 1, value: this.props.switches[switchId].byte_rate}));
+      .map(switchId => ({id: switchId, label: switchId, group: "switch", value: this.props.switches[switchId].byte_rate}));
 
     var hostLinks = _.keys(this.props.hostLinks)
       .filter(hostLinkId => this.props.hostLinks[hostLinkId].isUp)
@@ -82,7 +100,7 @@ export default class NetworkGraph extends React.Component {
         id: hostLinkId,
         from: this.props.hostLinks[hostLinkId]._switch,
         to: this.props.hostLinks[hostLinkId].host,
-        group: 0
+        group: "hostLink"
       }));
 
     var switchLinks = _.keys(this.props.links)
@@ -91,8 +109,9 @@ export default class NetworkGraph extends React.Component {
         id: switchLinkId,
         from: this.props.links[switchLinkId].from,
         to: this.props.links[switchLinkId].to,
-        group: 1,
-        value: this.props.links[switchLinkId].stats.byte_rate
+        group: "switchLink",
+        value: this.props.links[switchLinkId].stats.byte_rate,
+        label: Math.round(this.props.links[switchLinkId].stats.byte_rate / 1024, 2) + "kbps"
       }));
 
     var removedHostNodes = _.keys(this.props.hosts).filter(hostId => this.props.hosts[hostId] === null);
@@ -112,6 +131,10 @@ export default class NetworkGraph extends React.Component {
     this.edges.update(hostLinks);
     this.edges.update(switchLinks);
 
+    this.fitNetwork();
+  }
+
+  fitNetwork() {
     if (!this.networkAnimating) {
       var options = {
         duration: 500,
@@ -122,8 +145,24 @@ export default class NetworkGraph extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  onSelect(e) {
+    console.log(e);
+    this.setState({
+      selectedNodes: e.nodes.map(nodeId => this.nodes.get(nodeId))
+    })
+  }
+
   componentDidMount() {
     const container = this.refs.graph.getDOMNode();
+
+    this.nodes = new vis.DataSet();
+    this.edges = new vis.DataSet();
+
+
     const graph = {
       nodes: this.nodes,
       edges: this.edges
@@ -131,12 +170,26 @@ export default class NetworkGraph extends React.Component {
 
     this.network = new vis.Network(container, graph, this.options);
     this.network.on('animationFinished', () => { this.networkAnimating = false });
+    this.network.on("select", this.onSelect.bind(this));
+
+    this.interval = setInterval(this.updateGraph.bind(this), 1000);
+    this.updateGraph();
   }
 
   render() {
     return (
       <div>
         <div id="graph" ref="graph"></div>
+        <div>
+          {this.state.selectedNodes.map(node => {
+              switch(node.group) {
+                case "host":
+                  return <HostInspector node={node} />
+                case "switch":
+                  return <SwitchInspector node={node} />
+              }
+          })}
+        </div>
       </div>
     );
   }

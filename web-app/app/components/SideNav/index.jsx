@@ -13,7 +13,8 @@ module.exports = React.createClass({
 
   render: function() {
     var menuItems = [
-      {route: '/', text: 'Home'},
+      {route: '/', text: 'Network Graph'},
+      {route: '/timeline', text: 'Event Timeline'},
       {route: '/about', text: 'About'}
     ];
 
