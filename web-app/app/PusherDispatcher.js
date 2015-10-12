@@ -102,7 +102,9 @@ export default class PusherDispatcher {
     }
 
     onMessage(message) {
-        processMessage(message, this.dispatch, this.store);
+        if (this.store.getState().App.liveUpdate) {
+            processMessage(message, this.dispatch, this.store);
+        }
     }
 
     // Provide a list of message ids to subscribe to, can be used to filter the stream

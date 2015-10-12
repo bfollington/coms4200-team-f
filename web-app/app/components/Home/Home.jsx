@@ -14,10 +14,10 @@ import {connect} from "react-redux";
 @connect(
   state => (
     {
-      switches: state.Switch.items,
-      hosts: state.Host.items,
-      hostLinks: state.HostLink.items,
-      links: state.Link.items,
+      switches: !state.App.isTimeTravelling ? state.Switch.items : state.App.selectedState.Switch.items,
+      hosts: !state.App.isTimeTravelling ? state.Host.items : state.App.selectedState.Host.items,
+      hostLinks: !state.App.isTimeTravelling ? state.HostLink.items : state.App.selectedState.HostLink.items,
+      links: !state.App.isTimeTravelling ? state.Link.items : state.App.selectedState.Link.items,
     }
   )
 )

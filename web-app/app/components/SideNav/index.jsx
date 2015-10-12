@@ -18,7 +18,7 @@ module.exports = React.createClass({
       {route: '/about', text: 'About'}
     ];
 
-    var header = <div className='header'>Sample Project</div>;
+    var header = <div className='header'>Menu</div>;
 
     return <LeftNav
       className='sideNav'

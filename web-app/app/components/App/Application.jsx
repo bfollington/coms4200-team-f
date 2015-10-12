@@ -18,12 +18,15 @@ import Switch from "reducers/Switch";
 import Host from "reducers/Host";
 import HostLink from "reducers/HostLink";
 import Link from "reducers/Link";
+import App from "reducers/App";
 
 // From python backend
 import messageData from "../../../../messages.json";
 import PusherDispatcher from "PusherDispatcher";
 
-const finalCreateStore = createStore;
+const finalCreateStore = compose(
+    devTools()
+)(createStore);
 
 export default class Application extends React.Component {
   constructor(props) {
@@ -33,6 +36,7 @@ export default class Application extends React.Component {
       Switch,
       HostLink,
       Link,
+      App,
       Host
     }));
 
@@ -64,9 +68,9 @@ export default class Application extends React.Component {
           }
         }
         </Provider>
-        {/*<DebugPanel top right bottom>
+        {<DebugPanel top right bottom>
           <DevTools store={this.store} monitor={LogMonitor} />
-        </DebugPanel>*/}
+        </DebugPanel>}
       </div>
 
     );

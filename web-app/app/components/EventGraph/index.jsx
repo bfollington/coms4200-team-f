@@ -10,6 +10,9 @@ import {EventInspector} from "./EventInspector";
 require('./style');
 require('vis/dist/vis.css');
 
+import {connect} from "react-redux";
+import { jumpToState } from "actions/TimeTravel";
+
 function mapEventToTimelineEntry(event) {
   return {
     id: event.id,
@@ -20,6 +23,12 @@ function mapEventToTimelineEntry(event) {
   };
 }
 
+@connect(
+  state => ({}),
+  dispatch => ({
+    "onJumpToState": (state) => dispatch(jumpToState(state))
+  })
+)
 export default class EventGraph extends React.Component {
   constructor(props) {
     super(props);
@@ -50,8 +59,10 @@ export default class EventGraph extends React.Component {
 
   onNodeSelect(e) {
     if (e.items.length > 0) {
+      console.log(this.events.get(e.items[0]));
       this.setState({
-        selectedAction: this.events.get(e.items[0]).full_event.action
+        selectedAction: this.events.get(e.items[0]).full_event.action,
+        selectedState: this.events.get(e.items[0]).full_event.state
       });
     }
   }
@@ -75,11 +86,15 @@ export default class EventGraph extends React.Component {
     this.fitTimeline(10);
   }
 
+  onJumpToState() {
+    this.props.onJumpToState(this.state.selectedState);
+  }
+
   render() {
     return (
       <div>
         <div id="timeline" ref="timeline"></div>
-        <div><EventInspector event={this.state.selectedAction} /></div>
+        <div><EventInspector onJumpToState={this.onJumpToState.bind(this)} event={this.state.selectedAction} /></div>
       </div>
     );
   }

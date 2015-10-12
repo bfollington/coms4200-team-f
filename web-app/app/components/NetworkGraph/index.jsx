@@ -11,6 +11,13 @@ import {HostInspector} from "./HostInspector";
 
 require('./style');
 
+import {connect} from "react-redux";
+import { clearNetwork } from "actions/ClearNetwork";
+import { toggleLiveUpdate } from "actions/LiveUpdate";
+
+import {Toggle} from "material-ui";
+
+
 function mapToNodes(devices, type) {
   let nodes = [];
   _.keys(devices).map( id => {
@@ -38,6 +45,18 @@ function mapToEdges(links, type) {
   return edges;
 }
 
+
+@connect(
+  state => ({
+    liveUpdate: state.App.liveUpdate
+  }),
+  dispatch => (
+    {
+      "onClearData": () => dispatch(clearNetwork()),
+      "onToggleLiveUpdate": () => dispatch(toggleLiveUpdate())
+    }
+  )
+)
 export default class NetworkGraph extends React.Component {
   constructor(props) {
     super(props);
@@ -131,6 +150,11 @@ export default class NetworkGraph extends React.Component {
     this.edges.update(hostLinks);
     this.edges.update(switchLinks);
 
+    if (hostNodes.length == 0 && switchNodes.length == 0 && hostLinks.length == 0 && switchLinks.length == 0) {
+      this.nodes.clear();
+      this.edges.clear();
+    }
+
     this.fitNetwork();
   }
 
@@ -179,6 +203,9 @@ export default class NetworkGraph extends React.Component {
   render() {
     return (
       <div>
+        <button onClick={this.props.onClearData}>Clear Data</button>
+        <input type="checkbox" name="your-group" value="unit-in-group" checked={this.props.liveUpdate} onChange={this.props.onToggleLiveUpdate} />Live Update Enabled
+
         <div id="graph" ref="graph"></div>
         <div>
           {this.state.selectedNodes.map(node => {

@@ -12,7 +12,7 @@ export class EventInspector extends React.Component {
         }
 
         const INSPECTOR_MAP = {
-            "SwitchAddedMessage": <SwitchAddedInspector event={this.props.event} />
+            "SwitchAddedMessage": <SwitchAddedInspector onJumpToState={this.props.onJumpToState} event={this.props.event} />
         };
 
         if (INSPECTOR_MAP[this.props.event.type] !== undefined) {
@@ -29,6 +29,11 @@ class SwitchAddedInspector extends React.Component {
     }
 
     render() {
-        return (<div>{this.props.event}</div>);
+        return (
+            <div>
+                {this.props.event}
+                <button onClick={this.props.onJumpToState}>Jump to State</button>
+            </div>
+        );
     }
 }
