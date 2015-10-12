@@ -6,8 +6,9 @@ import EventGraph from "../EventGraph";
 
 import _ from "lodash";
 
-import { returnToNormal } from "actions/TimeTravel";
 import {connect} from "react-redux";
+
+import AppToolbar from "components/AppToolbar";
 
 @connect(
   state => ({
@@ -27,7 +28,7 @@ export default class Timeline extends React.Component {
 
     return (
       <div className='timelinePage pageContent'>
-        {this.props.timeTravelling ? <button onClick={this.props.onReturnToLatestState}>Return to Latest State</button> : null}
+        <AppToolbar />
         <EventGraph ref='eventGraph' />
       </div>
     );

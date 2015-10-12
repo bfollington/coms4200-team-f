@@ -64,6 +64,11 @@ export default class EventGraph extends React.Component {
         selectedAction: this.events.get(e.items[0]).full_event.action,
         selectedState: this.events.get(e.items[0]).full_event.state
       });
+    } else {
+      this.setState({
+        selectedAction: undefined,
+        selectedState: undefined
+      });
     }
   }
 

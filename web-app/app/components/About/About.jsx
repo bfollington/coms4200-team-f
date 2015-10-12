@@ -13,11 +13,14 @@ export default class About extends React.Component {
   render() {
     return (
       <div className='aboutPage pageContent'>
-        <h1>About page</h1>
-        <h3>You need some..</h3>
-        <Paper zDepth={2}>
-          <img className='image' src={require('./coffee.jpg')} />
-        </Paper>
+        <h1>COMS4200</h1>
+        <h3>Group F</h3>
+        <ul>
+          <li>Ben Follington</li>
+          <li>Victor Roussekov</li>
+          <li>Nic Coates</li>
+          <li>Toan Ho</li>
+        </ul>
       </div>
     );
   }

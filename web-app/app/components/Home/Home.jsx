@@ -9,6 +9,8 @@ import EventGraph from "../EventGraph";
 
 import _ from "lodash";
 
+import AppToolbar from "components/AppToolbar";
+
 import {connect} from "react-redux";
 
 @connect(
@@ -33,6 +35,7 @@ export default class Home extends React.Component {
 
     return (
       <div className='homePage pageContent'>
+        <AppToolbar />
         <NetworkGraph ref='networkGraph' switches={this.props.switches} links={this.props.links} hosts={this.props.hosts} hostLinks={this.props.hostLinks} />
       </div>
     );

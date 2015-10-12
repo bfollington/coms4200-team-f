@@ -24,9 +24,11 @@ import App from "reducers/App";
 import messageData from "../../../../messages.json";
 import PusherDispatcher from "PusherDispatcher";
 
-const finalCreateStore = compose(
-    devTools()
-)(createStore);
+// const finalCreateStore = compose(
+//     devTools()
+// )(createStore);
+
+const finalCreateStore = createStore;
 
 export default class Application extends React.Component {
   constructor(props) {
@@ -68,9 +70,9 @@ export default class Application extends React.Component {
           }
         }
         </Provider>
-        {<DebugPanel top right bottom>
+        {/*<DebugPanel top right bottom>
           <DevTools store={this.store} monitor={LogMonitor} />
-        </DebugPanel>}
+        </DebugPanel>*/}
       </div>
 
     );

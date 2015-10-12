@@ -8,12 +8,12 @@ import _ from "lodash";
 
 import {SwitchInspector} from "./SwitchInspector";
 import {HostInspector} from "./HostInspector";
+import {LinkInspector} from "./LinkInspector";
+import {HostLinkInspector} from "./HostLinkInspector";
 
 require('./style');
 
 import {connect} from "react-redux";
-import { clearNetwork } from "actions/ClearNetwork";
-import { toggleLiveUpdate } from "actions/LiveUpdate";
 
 import {Toggle} from "material-ui";
 
@@ -45,24 +45,21 @@ function mapToEdges(links, type) {
   return edges;
 }
 
-
 @connect(
   state => ({
-    liveUpdate: state.App.liveUpdate
-  }),
-  dispatch => (
-    {
-      "onClearData": () => dispatch(clearNetwork()),
-      "onToggleLiveUpdate": () => dispatch(toggleLiveUpdate())
-    }
-  )
+    switches: !state.App.isTimeTravelling ? state.Switch.items : state.App.selectedState.Switch.items,
+    hosts: !state.App.isTimeTravelling ? state.Host.items : state.App.selectedState.Host.items,
+    hostLinks: !state.App.isTimeTravelling ? state.HostLink.items : state.App.selectedState.HostLink.items,
+    links: !state.App.isTimeTravelling ? state.Link.items : state.App.selectedState.Link.items
+  })
 )
 export default class NetworkGraph extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      selectedNodes: []
+      selectedNodes: [],
+      selectedEdges: []
     };
 
     this.options = {
@@ -156,6 +153,12 @@ export default class NetworkGraph extends React.Component {
     }
 
     this.fitNetwork();
+
+    // Force update nicely
+    this.setState({
+      selectedNodes: this.state.selectedNodes,
+      selectedEdges: this.state.selectedEdges
+    })
   }
 
   fitNetwork() {
@@ -176,7 +179,8 @@ export default class NetworkGraph extends React.Component {
   onSelect(e) {
     console.log(e);
     this.setState({
-      selectedNodes: e.nodes.map(nodeId => this.nodes.get(nodeId))
+      selectedNodes: e.nodes.map(nodeId => this.nodes.get(nodeId)),
+      selectedEdges: e.edges.map(edgeId => this.edges.get(edgeId))
     })
   }
 
@@ -203,19 +207,24 @@ export default class NetworkGraph extends React.Component {
   render() {
     return (
       <div>
-        <button onClick={this.props.onClearData}>Clear Data</button>
-        <input type="checkbox" name="your-group" value="unit-in-group" checked={this.props.liveUpdate} onChange={this.props.onToggleLiveUpdate} />Live Update Enabled
-
         <div id="graph" ref="graph"></div>
         <div>
           {this.state.selectedNodes.map(node => {
               switch(node.group) {
                 case "host":
-                  return <HostInspector node={node} />
+                  return <HostInspector host={this.props.hosts[node.id]} />
                 case "switch":
-                  return <SwitchInspector node={node} />
+                  return <SwitchInspector switch={this.props.switches[node.id]} />
               }
           })}
+          {this.state.selectedNodes.length === 0 ? this.state.selectedEdges.map(edge => {
+              switch(edge.group) {
+                case "switchLink":
+                  return <LinkInspector link={this.props.links[edge.id]} />
+                case "hostLink":
+                  return <HostLinkInspector hostLink={this.props.hostLinks[edge.id]} />
+              }
+          }) : null}
         </div>
       </div>
     );
