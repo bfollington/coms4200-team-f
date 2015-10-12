@@ -99,7 +99,7 @@ class NetworkTopo(object):
             host_tracker.addListenerByName("HostEvent", self.__handle_host_tracker_HostEvent)
 
         self.stopSyncThread = Event()
-        self.syncThread = TimerThread(self.stopSyncThread, self.sync, 30)
+        self.syncThread = TimerThread(self.stopSyncThread, self.sync, 15)
         self.syncThread.start()
 
     def sync(self):
@@ -131,6 +131,7 @@ class NetworkTopo(object):
 
     def __handle_host_tracker_HostEvent (self, event):
         # Name is intentionally mangled to keep listen_to_dependencies away
+        print "HOST!", dir(event.entry), event.entry.ipAddrs
         h = str(event.entry.macaddr)
         s = dpid_to_str(event.entry.dpid)
 

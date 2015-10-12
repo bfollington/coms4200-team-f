@@ -9,7 +9,7 @@ from schema.message import *
 
 log = core.getLogger()
 STREAM = "pox"
-PUSHER_SEND_FREQUENCY = 5
+PUSHER_SEND_FREQUENCY = 3
 
 pusher = Pusher(
     app_id='139897',

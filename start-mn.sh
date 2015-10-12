@@ -1,1 +1,1 @@
-sudo mn --topo tree,depth=3,fanout=2 --mac --controller remote
+sudo mn --topo tree,depth=2,fanout=3 --mac --controller remote
