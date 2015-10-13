@@ -20,8 +20,9 @@ export default class TopNav extends React.Component {
       <Paper className='topNav' rounded={false}>
         <AppBar
           iconElementLeft={menuButton}
-          title='Sample project'
-          zDepth={0} />
+          title='COMS4200 PoxVis'
+          zDepth={0}>
+        </AppBar>
       </Paper>
     );
   }

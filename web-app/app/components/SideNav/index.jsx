@@ -13,11 +13,12 @@ module.exports = React.createClass({
 
   render: function() {
     var menuItems = [
-      {route: '/', text: 'Home'},
+      {route: '/', text: 'Network Graph'},
+      {route: '/timeline', text: 'Event Timeline'},
       {route: '/about', text: 'About'}
     ];
 
-    var header = <div className='header'>Sample Project</div>;
+    var header = <div className='header'>Menu</div>;
 
     return <LeftNav
       className='sideNav'

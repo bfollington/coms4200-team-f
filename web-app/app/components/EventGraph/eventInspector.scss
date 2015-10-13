@@ -1,0 +1,15 @@
+.inspector {
+    padding: 10px;
+    padding-top: 0px;
+    width: 256px;
+
+    position: fixed;
+    right: 32px;
+    top: 96px;
+}
+
+.vis-item {
+    .vis-item-content {
+        cursor: pointer;
+    }
+}

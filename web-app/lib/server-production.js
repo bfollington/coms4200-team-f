@@ -1,7 +1,7 @@
 'use strict';
 
 require('./server')({
-  prerender: true,
+  prerender: false,
   separateStylesheet: true,
   defaultPort: 8080
 });
