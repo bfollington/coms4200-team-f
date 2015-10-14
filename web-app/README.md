@@ -1,23 +1,10 @@
-# webpack/react-starter
+# COMS4200 Group F - PoxVis network visualisation tool
 
-This repo began as a GitHub fork of [webpack/react-starter](https://github.com/webpack/react-starter).
-
-It is a boilerplate for quickly starting React/Webpack/MaterialUI projects. It features lightning fast development ala live reload.
-
-The main differences from the original repo are:
-
-- Data layer has been stripped out (not needed for static sites).
-- Integrated Material UI ([callemall/material-ui](https://github.com/callemall/material-ui)).
-- Created a basic Material UI project with site navigation and a couple of sample pages.
-
+This is the repository for the PoxVis web app. This repo began as a GitHub fork of [webpack/react-starter](https://github.com/webpack/react-starter).
 
 ## Installation
 
-Just clone this repo and change the `origin` git remote.
-
-``` text
-npm install
-```
+Clone the repo and `cd` into the folder, then run `npm install`.
 
 
 ## Hot Module Replacement development server
@@ -50,7 +37,7 @@ http://localhost:8080/
 ```
 
 
-## License
+## Original License
 
 Copyright (c) 2012-2015 Tobias Koppers [![Gittip donate button](http://img.shields.io/gittip/sokra.png)](https://www.gittip.com/sokra/)
 
