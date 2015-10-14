@@ -6,14 +6,36 @@ import {
     JUMP_TO_STATE, RETURN_TO_NORMAL
 } from "actions/TimeTravel";
 
+import {
+    SHOW_ACTION_LOG, HIDE_ACTION_LOG, LOG_EVENT
+} from "actions/App";
+
 import _ from "lodash";
 
 function appState(state = {
     liveUpdate: true,
     isTimeTravelling: false,
-    selectedState: {}
+    selectedState: {},
+    viewEventLog: false,
+    eventLog: []
 }, action) {
     switch (action.type) {
+
+    case LOG_EVENT:
+        return _.assign(state, {
+            eventLog: state.eventLog.concat(action.message)
+        });
+
+
+    case SHOW_ACTION_LOG:
+        return _.assign(state, {
+            viewEventLog: true
+        });
+
+    case HIDE_ACTION_LOG:
+        return _.assign(state, {
+            viewEventLog: false
+        });
 
     case TOGGLE_LIVE_UPDATE:
         return _.assign(state, {

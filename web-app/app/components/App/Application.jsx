@@ -30,6 +30,8 @@ import PusherDispatcher from "PusherDispatcher";
 
 const finalCreateStore = createStore;
 
+import { clearNetwork } from "actions/ClearNetwork";
+
 export default class Application extends React.Component {
   constructor(props) {
     super(props);
@@ -44,7 +46,17 @@ export default class Application extends React.Component {
 
     console.log(this.store);
 
-    this.pusherDispatcher = new PusherDispatcher('b0c3071307e884cae9db', "pox", this.store);
+    this.initPusher("pox");
+  }
+
+  changeStream(stream) {
+    this.pusherDispatcher.tearDown();
+    this.store.dispatch(clearNetwork());
+    this.initPusher(stream);
+  }
+
+  initPusher(stream) {
+    this.pusherDispatcher = new PusherDispatcher('b0c3071307e884cae9db', stream, this.store);
     this.pusherDispatcher.subscribeToMessages(messageData.messages);
   }
 
@@ -58,6 +70,10 @@ export default class Application extends React.Component {
     };
   }
 
+  onStreamChange(stream) {
+    this.changeStream(stream);
+  }
+
   render() {
     return (
       <div>
@@ -65,7 +81,7 @@ export default class Application extends React.Component {
         {
           () => {
             return (
-              <Layout />
+              <Layout onStreamChange={this.onStreamChange.bind(this)} />
             );
           }
         }

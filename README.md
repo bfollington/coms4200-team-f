@@ -1,49 +1,83 @@
-# React-Pusher
+# COMS4200 Group F - PoxVis network visualisation tool
+
+This is the repository for PoxVis. It contains the required pox modules, the web application and relevant development and testing scripts.
+
 Integrates [Pusher](http://pusher.com) with [POX](http://github.com/noxrepo/pox) for real-time publishing of OpenFlow events.
 
-React frontend based on [React Material Webpack Boilerplate](https://github.com/lern/react-material-webpack-boilerplate) - more detailed `README` can be found in the `/app` directory.
+React frontend based on [React Material Webpack Boilerplate](https://github.com/lern/react-material-webpack-boilerplate), which in turn began as a GitHub fork of [webpack/react-starter](https://github.com/webpack/react-starter).
+
+# Installation
+
+Clone the repo and `cd` into the folder first.
+
+
+## Mininet
+
+It's recommended to run both mininet and pox in a virtual machine. The mininet VM and instructions can be viewed at http://mininet.org/vm-setup-notes/.
+
+For the project to work, your VM must be configured with internet access (both to install dependencies and access Pusher).
+
+To boot mininet into the various test cases, the `start-mn` shell scripts can be used. These are in the root of the repository.
 
 ## POX
-This is a clone of the [POX repo](http://github.com/noxrepo/pox), with additions that can be found in the `/pox/ext/` directory. This directory is where POX looks for custom modules when starting up.
 
-To start POX, first make sure you have Mininet configured and run:
+(Optional, but recommended) Use Python's `virtualenv` to create an isolated environment for installing our Python dependencies (such as Pusher).
+
+There are two libraries required before we install all the python dependencies:
+
 ```
-mininet@mininet-vm$ sudo mn --topo single,3 --mac --controller remote --switch ovsk
+$ sudo apt-get install python-dev
+$ sudo apt-get install libffi-dev
+
 ```
 
-Optional, but recommended. Use Python's `virtualenv` to create an isolated environment for installing our Python dependencies (such as Pusher).
-
-(In `/pox`):
+(In `pox-app`):
 ```
-
-mininet@mininet-vm$ virtualenv venv
+$ virtualenv venv
 ```
 
 **Make sure to activate it (I always forget to do this).**
 ```
-mininet@mininet-vm$ source /venv/bin/activate
+$ source /venv/bin/activate
 ```
 
 
 After that, we need to make sure we have all the necessary Python packages. These can be found in `/pox/requirements.txt`, and can be installed by running:
 
 ```
-mininet@mininet-vm$ pip install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 Next, in the `/pox` (not `/pox/pox`) directory run:
 ```
-mininet@mininet-vm$ python pox.py bootstrap
+./start-pox.sh [stream name]
 ```
 
+`stream name` is optional and defaults to `pox`.
 
-# React
-This (very basic) web app simply subscribes for POX events and renders them.
+### Development
 
-In the `/app` folder, on your home machine, run ():
+All modules are located in `pox-app/ext`. `modules` contains our pox modules, `lib` contains the Pusher interface and `schema` contains the message models.
+
+For ease of development, the entirety of pox is included in the repository. This is not ideal and should be removed if further development occurs. The _only_ files that belong to this project in the `pox-app` folder are:
+
+- `ext/`
+- `requirements.txt`
+- `start-pox.sh`
+
+## Web App
+
+
+### Installation
+
+Node is needed to build and run the web-app,
+
+In the `web-app` folder, on your home machine, run:
 ```
 $ npm install
 ```
+
+### Development
 
 Then, to start the app:
 
@@ -57,6 +91,19 @@ _In another console_:
 $ npm run start-dev
 ```
 
-# Schema
+Open your browser and visit `http://localhost:8080`
 
-There are defined python models for all messages sent via Pusher, these are located in `pox-app/ext/schema`. These are exported to `messages.json` in the root folder to be read in the `web-app`. To compile the messages from python to json run `python pox-app/exit/schema/compile.py` in the root.
+### Production
+
+It's not recommended to run the app this way yet, but you can:
+
+```
+$ npm run build
+$ npm run start
+```
+
+Open your browser and visit `http://localhost:8080`
+
+# Message Schema
+
+There are defined python models for all messages sent via Pusher, these are located in `pox-app/ext/schema`. These are "exported" through `messages.json` in the root folder to be read in the `web-app`.

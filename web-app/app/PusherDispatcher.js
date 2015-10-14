@@ -15,6 +15,7 @@ import {
 } from "actions/Link";
 
 import { clearNetwork } from "actions/ClearNetwork";
+import { logEvent } from "actions/App";
 
 import History from "History";
 
@@ -83,27 +84,21 @@ export default class PusherDispatcher {
         this.dispatch = store.dispatch;
         this.store = store;
         this.apiKey = apiKey;
+        this.streamName = stream;
 
         this.pusher = new Pusher(apiKey);
         this.stream = this.pusher.subscribe(stream);
+    }
 
-        // dispatch(addSwitch("s1"));
-        // dispatch(addSwitch("s2"));
-        // dispatch(addSwitch("s3"));
-
-        // dispatch(addHost("h1"));
-        // dispatch(addHost("h2"));
-
-        // dispatch(addLink("s3", 1, "s2", 1));
-        // dispatch(addLink("s1", 1, "s2", 2));
-
-        // dispatch(addHostLink("h1", "s2"));
-        // dispatch(addHostLink("h2", "s2"));
+    tearDown() {
+        // this.pusher.unsubscribe(this.streamName);
+        this.pusher.disconnect();
     }
 
     onMessage(message) {
         if (this.store.getState().App.liveUpdate) {
             processMessage(message, this.dispatch, this.store);
+            this.dispatch(logEvent(message));
         }
     }
 

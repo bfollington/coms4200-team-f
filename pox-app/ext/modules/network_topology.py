@@ -80,18 +80,16 @@ def delete_host_link(h, s):
     return SwitchHostLinkRemovedMessage(str(h), str(s))
 
 
-def launch():
+def launch(pusher_stream="pox"):
     log_style.config()
-    core.registerNew(NetworkTopo, core.host_tracker)
+    core.registerNew(NetworkTopo, core.host_tracker, pusher_stream)
 
 class NetworkTopo(object):
-    def __init__ (self, host_tracker=False):
+    def __init__ (self, host_tracker=False, pusher_stream="pox"):
         core.listen_to_dependencies(self)
         core.addListeners(self)
-        self.switches = set()
-        self.links = set()
-        self.hosts = {} # mac -> dpid
-        self.host_switch_ports = {} # (h, s) -> port_no
+        self.initModel()
+        self.stream = pusher_stream
 
         if host_tracker:
             # TODO: Don't seem to be getting host events at the moment?
@@ -102,15 +100,17 @@ class NetworkTopo(object):
         self.syncThread = TimerThread(self.stopSyncThread, self.sync, 15)
         self.syncThread.start()
 
+    def initModel(self):
+        self.switches = set()
+        self.links = set()
+        self.hosts = {} # mac -> dpid
+        self.host_switch_ports = {} # (h, s) -> port_no
+
     def sync(self):
         self.send_full()
 
     def send (self, data):
-        try:
-            pusher.send_message(data)
-        except:
-            e = sys.exc_info()[0]
-            log.error("Pusher Error: %s", e)
+        pusher.send_message(data, self.stream)
 
 
     def send_full (self):
@@ -131,7 +131,6 @@ class NetworkTopo(object):
 
     def __handle_host_tracker_HostEvent (self, event):
         # Name is intentionally mangled to keep listen_to_dependencies away
-        print "HOST!", dir(event.entry), event.entry.ipAddrs
         h = str(event.entry.macaddr)
         s = dpid_to_str(event.entry.dpid)
 
@@ -153,6 +152,7 @@ class NetworkTopo(object):
     def _handle_GoingDownEvent(self, event):
         # Stop the sync thread
         self.stopSyncThread.set()
+        pusher.send_message_immediate(ClearMessage(), self.stream)
 
     def _handle_openflow_ConnectionUp (self, event):
         s = dpid_to_str(event.dpid)
@@ -165,6 +165,11 @@ class NetworkTopo(object):
         if s in self.switches:
             self.switches.remove(s)
             self.send(delete_switch(s))
+
+        # Reset network completely if no switches left
+        if len(self.switches) == 0:
+            self.initModel()
+            self.sync()
 
     def _handle_openflow_discovery_LinkEvent (self, event):
         # Normalise link direction
