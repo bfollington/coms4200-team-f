@@ -19,9 +19,9 @@ import log_style
 
 log = core.getLogger()
 
-def launch ():
+def launch (pusher_stream="pox"):
     log_style.config()
-    core.registerNew(NetworkStats)
+    core.registerNew(NetworkStats, pusher_stream)
 
 def get_connection_list():
     return core.openflow._connections.values()
@@ -35,14 +35,15 @@ def request_stats():
 
     log.debug("{0} connections to check".format(len(get_connection_list())))
 
-def send(data):
-    pusher.send_message_immediate(data)
+def send(data, stream):
+    pusher.send_message_immediate(data, stream)
 
 class NetworkStats(object):
 
-    def __init__ (self):
+    def __init__ (self, pusher_stream="pox"):
         core.addListeners(self)
         core.openflow.addListeners(self)
+        self.stream = pusher_stream
 
         self.stopStatsThread = Event()
         self.syncThread = TimerThread(self.stopStatsThread, request_stats, STAT_SAMPLING_PERIOD)
@@ -81,7 +82,7 @@ class NetworkStats(object):
             total_flows += 1
 
         message = AllFlowStatsForSwitchMessage(dpid, total_bytes, total_packets, total_flows)
-        send(message)
+        send(message, self.stream)
 
 
     def _handle_PortStatsReceived (self, event) :
@@ -100,4 +101,4 @@ class NetworkStats(object):
             ))
 
         message = SwitchStatsMessage(dpidToStr(event.connection.dpid), ports)
-        send(message)
+        send(message, self.stream)
