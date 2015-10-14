@@ -88,19 +88,6 @@ export default class PusherDispatcher {
 
         this.pusher = new Pusher(apiKey);
         this.stream = this.pusher.subscribe(stream);
-
-        // dispatch(addSwitch("s1"));
-        // dispatch(addSwitch("s2"));
-        // dispatch(addSwitch("s3"));
-
-        // dispatch(addHost("h1"));
-        // dispatch(addHost("h2"));
-
-        // dispatch(addLink("s3", 1, "s2", 1));
-        // dispatch(addLink("s1", 1, "s2", 2));
-
-        // dispatch(addHostLink("h1", "s2"));
-        // dispatch(addHostLink("h2", "s2"));
     }
 
     tearDown() {
