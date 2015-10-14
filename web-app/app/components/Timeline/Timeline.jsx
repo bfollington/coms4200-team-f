@@ -28,7 +28,6 @@ export default class Timeline extends React.Component {
 
     return (
       <div className='timelinePage pageContent'>
-        <AppToolbar />
         <EventGraph ref='eventGraph' />
       </div>
     );

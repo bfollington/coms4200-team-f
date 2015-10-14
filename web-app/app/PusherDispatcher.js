@@ -15,6 +15,7 @@ import {
 } from "actions/Link";
 
 import { clearNetwork } from "actions/ClearNetwork";
+import { logEvent } from "actions/App";
 
 import History from "History";
 
@@ -83,6 +84,7 @@ export default class PusherDispatcher {
         this.dispatch = store.dispatch;
         this.store = store;
         this.apiKey = apiKey;
+        this.streamName = stream;
 
         this.pusher = new Pusher(apiKey);
         this.stream = this.pusher.subscribe(stream);
@@ -101,9 +103,15 @@ export default class PusherDispatcher {
         // dispatch(addHostLink("h2", "s2"));
     }
 
+    tearDown() {
+        // this.pusher.unsubscribe(this.streamName);
+        this.pusher.disconnect();
+    }
+
     onMessage(message) {
         if (this.store.getState().App.liveUpdate) {
             processMessage(message, this.dispatch, this.store);
+            this.dispatch(logEvent(message));
         }
     }
 
